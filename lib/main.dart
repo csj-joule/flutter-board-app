@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'providers/auth_provider.dart';
 import 'providers/board_provider.dart';
+import 'screens/login_screen.dart';
 import 'screens/post_list_screen.dart';
 
 void main() {
@@ -12,8 +14,11 @@ class BoardApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => BoardProvider(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(create: (_) => BoardProvider()),
+      ],
       child: MaterialApp(
         title: '게시판',
         debugShowCheckedModeBanner: false,
@@ -31,8 +36,28 @@ class BoardApp extends StatelessWidget {
           useMaterial3: true,
         ),
         themeMode: ThemeMode.system,
-        home: const PostListScreen(),
+        home: const AuthGate(),
       ),
     );
+  }
+}
+
+/// 로그인 여부에 따라 화면 분기
+class AuthGate extends StatelessWidget {
+  const AuthGate({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final auth = context.watch<AuthProvider>();
+
+    // 앱 시작 시 자동 로그인 시도 중
+    if (auth.isLoading) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    // 로그인 여부에 따라 화면 분기
+    return auth.isSignedIn ? const PostListScreen() : const LoginScreen();
   }
 }

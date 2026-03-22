@@ -5,8 +5,9 @@ import '../models/post.dart';
 
 class PostFormScreen extends StatefulWidget {
   final Post? post;
+  final String? defaultAuthor;
 
-  const PostFormScreen({super.key, this.post});
+  const PostFormScreen({super.key, this.post, this.defaultAuthor});
 
   @override
   State<PostFormScreen> createState() => _PostFormScreenState();
@@ -24,8 +25,10 @@ class _PostFormScreenState extends State<PostFormScreen> {
   void initState() {
     super.initState();
     _titleController = TextEditingController(text: widget.post?.title ?? '');
-    _contentController = TextEditingController(text: widget.post?.content ?? '');
-    _authorController = TextEditingController(text: widget.post?.author ?? '');
+    _contentController =
+        TextEditingController(text: widget.post?.content ?? '');
+    _authorController = TextEditingController(
+        text: widget.post?.author ?? widget.defaultAuthor ?? '');
   }
 
   @override
@@ -56,7 +59,6 @@ class _PostFormScreenState extends State<PostFormScreen> {
     }
 
     Navigator.pop(context);
-
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(isEditing ? '게시글이 수정되었습니다.' : '게시글이 등록되었습니다.'),
@@ -76,7 +78,8 @@ class _PostFormScreenState extends State<PostFormScreen> {
             onPressed: _submit,
             child: Text(
               isEditing ? '수정' : '등록',
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              style:
+                  const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
           ),
         ],
